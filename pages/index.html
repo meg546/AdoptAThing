@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pet Adoption - Home</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h1>Available Pets for Adoption</h1>
+  <ul>
+    {% for pet in pets %}
+    <li>
+      <a href="{{ url_for('pet_detail', pet_id=pet['id']) }}">{{ pet['name'] }} - {{ pet['breed'] }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

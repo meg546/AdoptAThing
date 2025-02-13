@@ -1,0 +1,26 @@
+-- Users table (for future use)
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL
+);
+
+-- Pets table
+CREATE TABLE pets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    breed TEXT,
+    age INTEGER,
+    description TEXT,
+    image_url TEXT
+);
+
+-- Adoption Requests table
+CREATE TABLE adoption_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pet_id INTEGER NOT NULL,
+    adopter_name TEXT NOT NULL,
+    adopter_email TEXT NOT NULL,
+    request_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (pet_id) REFERENCES pets (id)
+);
