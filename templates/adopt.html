@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Adopt {{ pet.name if pet else 'Pet' }}</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body>
+  <nav>
+    <div class="nav-wrapper teal">
+      <a href="/" class="brand-logo center">Adopt A Thing</a>
+      <ul id="nav-mobile" class="left hide-on-med-and-down">
+        <li><a href="/">Home</a></li>
+        <li><a href="/pets">Pets</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
+    </div>
+  </nav>
+  
+  <div class="container">
+    <div class="section">
+      <h3>Adopt {{ pet.name if pet else 'Pet' }}</h3>
+      
+      {% if images %}
+      <div class="carousel carousel-slider center">
+        {% for img in images %}
+          <a class="carousel-item"><img src="{{ img }}" alt="{{ pet.name }}"></a>
+        {% endfor %}
+      </div>
+      {% endif %}
+      
+      <p><strong>Species:</strong> {{ pet.species }}</p>
+      <p><strong>Age:</strong> {{ pet.age }} years</p>
+      <p><strong>Gender:</strong> {{ pet.gender }}</p>
+      <p><strong>Description:</strong> {{ pet.description }}</p>
+
+      <form method="post">
+        <div class="input-field">
+          <input id="name" name="name" type="text" class="validate" required>
+          <label for="name">Your Name</label>
+        </div>
+        <div class="input-field">
+          <input id="email" name="email" type="email" class="validate" required>
+          <label for="email">Your Email</label>
+        </div>
+        <button class="btn waves-effect waves-light" type="submit">
+          Submit
+          <i class="material-icons right">send</i>
+        </button>
+      </form>
+    </div>
+  </div>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.carousel');
+        M.Carousel.init(elems, {fullWidth: true});
+    });
+  </script>
+</body>
+</html>
