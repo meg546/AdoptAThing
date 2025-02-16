@@ -1,7 +1,7 @@
 -- Users table (for future use)
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL,
+    username TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL
 );
 
@@ -42,3 +42,4 @@ CREATE TABLE IF NOT EXISTS thing_images (
     image_url TEXT NOT NULL,
     FOREIGN KEY (thing_id) REFERENCES things(id)
 );
+

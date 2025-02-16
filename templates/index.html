@@ -13,14 +13,24 @@
     <!-- Navigation Bar -->
     <nav>
       <div class="nav-wrapper teal">
-        <a href="/" class="brand-logo center">Adopt A Thing</a>
-        <ul id="nav-mobile" class="left hide-on-med-and-down">
-          <li><a href="/">Home</a></li>
-          <li><a href="/pets">Pets</a></li>
-          <li><a href="/about">About</a></li>
-        </ul>
+          <a href="/" class="brand-logo center">Adopt A Thing</a>
+          <ul id="nav-mobile" class="left hide-on-med-and-down">
+              <li><a href="/">Home</a></li>
+              <li><a href="/pets">Pets</a></li>
+              <li><a href="/about">About</a></li>
+              {% if 'username' in session %}
+              <li>Hello, {{ session['username'] }}</li>
+              <li><a href="{{ url_for('logout') }}">Logout</a></li>
+          {% else %}
+              <li><a href="{{ url_for('login') }}">Login</a></li>
+              <li><a href="{{ url_for('register') }}">Register</a></li>
+          {% endif %}
+          </ul>
+
       </div>
-    </nav>
+  </nav>
+
+    
 
     <!-- Main Content -->
     <div class="container">

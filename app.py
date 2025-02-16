@@ -1,9 +1,11 @@
 import sys
 sys.path.append("Code")
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash
 import sqlite3
 from Code.thing_generator import ThingGenerator  # Import AI Thing Generator
 from Code.thing import Thing  # Import Thing model
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 app = Flask(__name__)
 
@@ -79,6 +81,64 @@ def pets():
     return render_template('pets.html', pets=pets, things=things_list)
 
 
+app.secret_key = '123456'
+# route to login as an exisiting user
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        user = cursor.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+        conn.close()
+
+        if user and check_password_hash(user['password'], password):
+            session['username'] = user['username']  # Store username in session
+            return redirect(url_for('index'))
+        else:
+            flash('Invalid username or password!')
+            return redirect(url_for('login'))
+
+    return render_template('login.html')
+
+
+
+
+# route to register as a user
+@app.route('/register', methods =['GET','POST'])
+def register():
+
+    # post method that is sending info into database
+    if request.method == 'POST':
+
+        # get info from the form in register.html
+        username = request.form['username']
+        password = request.form['password']
+        
+        hashed_password = generate_password_hash(password)
+
+        # SQL functions to connect to database
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        #
+        try: 
+            cursor.execute('INSERT INTO users (username, password) VALUES (?,?)',
+            (username, hashed_password))
+            connection.commit
+
+        finally:
+            connection.close()
+
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+
+
 # Pet or AI Thing Detail Page
 @app.route('/pet/<int:pet_id>')
 def pet_detail(pet_id):
@@ -131,6 +191,12 @@ def adopt_pet(pet_id):
     
     conn.close()
     return render_template('adopt.html', pet=pet)
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)  # Remove user_id from session
+    session.pop('username', None)  # Remove username from session
+    return redirect(url_for('index'))
 
 # About Page
 @app.route('/about')
