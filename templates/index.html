@@ -1,51 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Adopt A Thing - Home</title>
-    <!-- Google Icon Font -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Materialize CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  </head>
-  <body>
-    <!-- Navigation Bar -->
-    <nav>
-      <div class="nav-wrapper teal">
-          <a href="/" class="brand-logo center">Adopt A Thing</a>
-          <ul id="nav-mobile" class="left hide-on-med-and-down">
-              <li><a href="/">Home</a></li>
-              <li><a href="/pets">Pets</a></li>
-              <li><a href="/about">About</a></li>
-              {% if 'username' in session %}
-              <li>Hello, {{ session['username'] }}</li>
-              <li><a href="{{ url_for('logout') }}">Logout</a></li>
-          {% else %}
-              <li><a href="{{ url_for('login') }}">Login</a></li>
-              <li><a href="{{ url_for('register') }}">Register</a></li>
-          {% endif %}
-          </ul>
+{% extends "base.html" %}
 
-      </div>
-  </nav>
+{% block title %}Adopt A Thing - Home{% endblock %}
 
-    
-
-    <!-- Main Content -->
-    <div class="container">
-      <div class="section center">
+{% block content %}
+    <div class="section center">
         <h2>Welcome to Adopt A Thing!</h2>
-        <p>yes
-        </p>
-        <a class="waves-effect waves-light btn" href="/pets">
-          <i class="material-icons left">pets</i>
-          View Pets
+        <p>The place to find the pet of your dreams!</p>
+        <a class="waves-effect waves-light btn" href="{{ url_for('pets') }}">
+            <i class="material-icons left">pets</i>
+            View Pets
         </a>
-      </div>
     </div>
-
-    <!-- Materialize JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-  </body>
-</html>
+{% endblock %}

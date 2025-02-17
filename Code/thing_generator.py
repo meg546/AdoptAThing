@@ -4,6 +4,7 @@ import logging
 from dotenv import load_dotenv
 import random
 from thing import Thing
+import requests
 
 # Load API key
 load_dotenv()
@@ -33,39 +34,62 @@ class ThingGenerator:
 
     @staticmethod
     def generate_name():
-        """Uses AI to generate a unique name for a Thing."""
         prompt = "Generate a unique, creative name for a mysterious sci-fi or fantasy, creature."
         return ThingGenerator.call_ai(prompt)
 
     @staticmethod
     def generate_species():
-        """Uses AI to generate a completely new, fictional species."""
         prompt = "Invent a completely unique, original species name for a creature. Do not use real-world species."
         return ThingGenerator.call_ai(prompt)
 
     @staticmethod
     def generate_description(name, species):
-        """Uses AI to create a brief description of the creature."""
-        prompt = f"Describe {name}, a {species}, in a fun and engaging way for an adoption listing. Make it sound friendly and exciting."
+        prompt = (
+            f"Create an engaging adoption site description for {name}, a {species}. "
+            f"The description should be either fun, mysterious, or heartwarming, depending on the nature of the creature's name and species. "
+            f"Use vivid and immersive language to make {name} feel unique and desirable for adoption.\n\n"
+            f" **Formatting Rules:**\n"
+            f"- The description should be **exactly 1 paragraphs** long.\n"
+            f"- Each paragraph should be between **50 to 60 words** to maintain balance.\n"
+            f"- The first paragraph should introduce {name} and highlight its most intriguing traits.\n"
+            f"- Then it should describe its personality, behavior, or special abilities.\n"
+            f"- Finally it should invite potential adopters, emphasizing why {name} would be a perfect companion.\n\n"
+            f" **Example Structure:**\n"
+            f"- *Meet {name}, a {species} like no other! With shimmering scales and an aura of mystery, this ethereal being captivates all who gaze upon it.*\n"
+            f"- *Though {name} may appear enigmatic, it is a playful and affectionate companion, always eager to share stories of distant realms.*\n"
+            f"- *Could you be the one to offer {name} a forever home? Open your heart to this extraordinary {species}, and let the adventure begin!*"
+        )
+
         return ThingGenerator.call_ai(prompt)
 
     @staticmethod
     def generate_images(name, species):
-        """Uses AI image model to generate images."""
         image_prompts = [
-            f"A high-quality Sci-Fi creature, a {species}, standing in a natural environment. No text, no labels, no words in the image.",
-            f"A close-up portrait of a {species}, in a vibrant setting, highly detailed. No text or symbols in the image."
+            f"A high-quality Sci-Fi creature, a {species}, standing in a high quality environment befitting its name. No text, no labels, no words in the image.",
         ]
-        return [ThingGenerator.call_image_ai(prompt) for prompt in image_prompts]
+        
+        local_image_paths = []
+        for idx, prompt in enumerate(image_prompts):
+            image_url = ThingGenerator.call_image_ai(prompt)
+            print(f"Generated Image URL: {image_url}")  # Debugging
+
+            if image_url:
+                local_image_path = ThingGenerator.download_and_save_image(image_url, name, idx)
+                print(f"Saved Image: {local_image_path}")  # Debugging
+                local_image_paths.append(local_image_path)
+
+        return local_image_paths
+
 
     @staticmethod
-    def call_ai(prompt, max_tokens=50):
-        """Uses OpenAI's GPT to generate text (Updated for OpenAI v1.0+)."""
+    def call_ai(prompt, max_tokens=200):
+        """Uses OpenAI's GPT to generate text."""
         try:
             response = openai.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=max_tokens
+                max_tokens=max_tokens,
+                temperature=0.7
             )
             return response.choices[0].message.content.strip()
         except Exception as e:
@@ -74,7 +98,7 @@ class ThingGenerator:
 
     @staticmethod
     def call_image_ai(prompt):
-        """Uses OpenAI's DALL·E to generate images (Updated for OpenAI v1.0+)."""
+        """Uses OpenAI's DALL·E to generate images."""
         try:
             response = openai.images.generate(
                 model="dall-e-3",
@@ -86,3 +110,18 @@ class ThingGenerator:
         except Exception as e:
             logger.error(f"Image Generation Error: {e}")
             return "https://via.placeholder.com/300"
+        
+    @staticmethod
+    def download_and_save_image(image_url, name, index):
+        try:
+            response = requests.get(image_url)
+            if response.status_code == 200:
+                safe_name = name.replace(" ", "_").lower()
+                filename = f"static/images/{safe_name}_{index}.png"
+                os.makedirs(os.path.dirname(filename), exist_ok=True)
+                with open(filename, "wb") as f:
+                    f.write(response.content)
+                return filename  # Return local file path
+        except Exception as e:
+            print(f"Failed to download image: {e}")
+        return "static/images/placeholder.png"

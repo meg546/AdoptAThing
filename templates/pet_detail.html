@@ -1,40 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ pet.name }} - Details</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-</head>
-<body>
-  <nav>
-    <div class="nav-wrapper teal">
-      <a href="/" class="brand-logo center">Adopt A Thing</a>
-      <ul id="nav-mobile" class="left hide-on-med-and-down">
-        <li><a href="/">Home</a></li>
-        <li><a href="/pets">Pets</a></li>
-        <li><a href="/about">About</a></li>
-      </ul>
-    </div>
-  </nav>
-  
-  <div class="pet-detail-container">
-    <h2>{{ pet.name }}</h2>
-    <div class="row">
-      <div class="col s12 center-align">
+{% extends "base.html" %}
+
+{% block title %}{{ pet.name }} - Details{% endblock %}
+
+{% block content %}
+  <div class="container pet-detail-container">
+    <div class="row valign-wrapper">
+      <!-- Image Section -->
+      <div class="col s12 m5 center-align">
         {% if images %}
-        <img src="{{ images[0] }}" alt="{{ pet.name }}">
+        <img class="responsive-img pet-detail-image" src="{{ url_for('static', filename=images[0].replace('static/', '')) }}" alt="{{ pet.name }}">
         {% else %}
-        <img src="https://via.placeholder.com/300" alt="No image available">
+        <img class="responsive-img pet-detail-image" src="{{ url_for('static', filename='images/placeholder.png') }}" alt="No image available">
         {% endif %}
       </div>
-      <div class="col s12">
-        <h5>Age:</h5>
-        <p>{{ pet.age }}</p>
-        <h5>Description:</h5>
-        <p>{{ pet.description }}</p>
+
+      <!-- Text Section -->
+      <div class="col s12 m7">
+        <h3 class="pet-name">{{ pet.name }}</h3>
+        <h5><strong>Age:</strong> {{ pet.age }}</h5>
+        <h5><strong>Description:</strong></h5>
+        <p class="pet-description">{{ pet.description | replace('\n', '<br>') | safe }}</p>             
+        
         <div class="center-align">
           <a class="waves-effect waves-light btn" href="{{ url_for('adopt_pet', pet_id=pet['id']) }}">
             <i class="material-icons left">pets</i> Adopt Me!
@@ -43,7 +29,4 @@
       </div>
     </div>
   </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-</body>
-</html>
+{% endblock %}

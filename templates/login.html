@@ -1,23 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Login - Adopt A Thing</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-</head>
-<body>
-  <div class="container">
+{% extends "base.html" %}
+
+{% block title %}Login - Adopt A Thing{% endblock %}
+
+{% block content %}
+<div class="container">
     <h2>Login</h2>
     <form action="{{ url_for('login') }}" method="post">
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" required>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
 
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
 
-      <button type="submit" class="btn">Login</button>
+        <button type="submit" class="btn">Login</button>
     </form>
-  </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-</body>
-</html>
+</div>
+{% endblock %}

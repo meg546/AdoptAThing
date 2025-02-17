@@ -20,34 +20,57 @@ def get_db_connection():
 def index():
     return render_template('index.html')
 
-# function to generate pets
-@app.route('/generate_things', methods=['POST'])
-def generate_things():
-    """Generates multiple AI-based 'Things' and stores them in the database."""
-    num_things = int(request.args.get("count", 1))  # Default to 1 if not specified
-
-    generated_things = []
+@app.route('/generate_thing', methods=['POST'])
+def generate_thing():
+    data = request.get_json()
+    count = data.get("count", 1)  # Default to 1 if not provided
+    
+    if count < 1:
+        return jsonify({"error": "Count must be at least 1"}), 400
+    
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    for _ in range(num_things):
-        thing = ThingGenerator.generate_thing()
-        if thing:
-            cursor.execute(
-                'INSERT INTO things (name, species, age, gender, description) VALUES (?, ?, ?, ?, ?)',
-                (thing.name, thing.species, thing.age, thing.gender, thing.description)
-            )
-            thing_id = cursor.lastrowid
+    created_things = []
+    
+    for _ in range(count):
+        new_thing = ThingGenerator.generate_thing()
 
-            # Save images
-            for img_url in thing.images:
-                cursor.execute('INSERT INTO thing_images (thing_id, image_url) VALUES (?, ?)', (thing_id, img_url))
+        if new_thing is None or new_thing.name == "Unknown Creature":
+            print(f"⚠️ Skipping Thing due to AI failure")
+            continue
 
-            conn.commit()
-            generated_things.append(thing.to_dict())
+        print(f"🔹 Inserting Thing: {new_thing.name} - {new_thing.species}")
+        print(f"🔹 Full Description Before Insert: {new_thing.description}")
 
+        formatted_description = new_thing.description.replace("\n", " ")
+
+        cursor.execute('INSERT INTO things (name, species, age, gender, description) VALUES (?, ?, ?, ?, ?)',
+                       (new_thing.name, new_thing.species, new_thing.age, new_thing.gender, formatted_description))
+        thing_id = cursor.lastrowid
+
+        image_urls = []
+        for image_path in new_thing.images:
+            cursor.execute('INSERT INTO thing_images (thing_id, image_url) VALUES (?, ?)', (thing_id, image_path))
+            image_urls.append(image_path)
+
+        created_things.append({
+            "id": thing_id,
+            "name": new_thing.name,
+            "species": new_thing.species,
+            "age": new_thing.age,
+            "gender": new_thing.gender,
+            "description": new_thing.description,
+            "images": image_urls
+        })
+
+    conn.commit()
     conn.close()
-    return jsonify({"generated_things": generated_things}), 201
+
+    if not created_things:
+        return jsonify({"error": "No valid Things were generated"}), 500
+
+    return jsonify({"things": created_things}), 201
 
 
 @app.route('/pets')

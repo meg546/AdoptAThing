@@ -1,65 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adoptable Pets & Things</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-    <nav>
-        <div class="nav-wrapper teal">
-            <a href="/" class="brand-logo center">Adopt A Thing</a>
-            <ul id="nav-mobile" class="left hide-on-med-and-down">
-                <li><a href="/">Home</a></li>
-                <li><a href="/pets">Pets</a></li>
-                <li><a href="/about">About</a></li>
-            </ul>
-        </div>
-    </nav>
+{% block title %}Adoptable Pets & Things{% endblock %}
 
-    <div class="container">
-        <h3 class="center">Adoptable Pets</h3>
-        <div class="pets-grid">
-            {% for pet in pets %}
-            <div class="card">
-                <div class="card-image">
-                    <img src="{{ pet.image_url }}" alt="Adoptable Pet">
-                </div>
-                <div class="card-content">
-                    <span class="card-title">{{ pet.name }}</span>
-                </div>
-                <div class="card-action">
-                    <a href="{{ url_for('pet_detail', pet_id=pet.id) }}" class="btn">View Details</a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+{% block content %}
+<div class="container">
+    <h3 class="center-align">Adoptable Pets & Things</h3>
 
-        <div class="pets-grid">
-            {% for thing in things %}
-            <div class="card">
-                <div class="card-image">
-                    {% if thing.images %}
-                    <img src="{{ thing.images[0] }}" alt="Generated Creature">
-                    {% else %}
-                    <img src="https://via.placeholder.com/300">
-                    {% endif %}
-                </div>
-                <div class="card-content">
-                    <span class="card-title">{{ thing.name }}</span>
-                </div>
-                <div class="card-action">
-                    <a href="{{ url_for('pet_detail', pet_id=thing.id) }}" class="btn">View Details</a>
-                </div>
-            </div>
-            {% endfor %}
+    <div class="pets-grid">
+        {% for pet in pets %}
+        <div class="pet-card">
+            <img src="{{ pet.image_url if pet.image_url else url_for('static', filename='images/placeholder.png') }}" alt="{{ pet.name }}">
+            <h5>{{ pet.name }}</h5>
+            <a href="{{ url_for('pet_detail', pet_id=pet.id) }}" class="view-details">View</a>
         </div>
+        {% endfor %}
+
+        {% for thing in things %}
+        <div class="pet-card">
+            <img src="{{ thing.images[0] if thing.images else url_for('static', filename='images/placeholder.png') }}" alt="{{ thing.name }}">
+            <h5>{{ thing.name }}</h5>
+            <a href="{{ url_for('pet_detail', pet_id=thing.id) }}" class="view-details">View</a>
+        </div>
+        {% endfor %}
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
-</body>
-</html>
+</div>
+{% endblock %}
