@@ -3,6 +3,8 @@ class Thing:
         self.id = id
         self.name = name
         self.species = species
+        if not isinstance(age, int) or age < 0:
+            raise ValueError("Age must be a positive integer.")
         self.age = age
         self.gender = gender
         self.description = description

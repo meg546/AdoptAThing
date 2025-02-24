@@ -16,8 +16,11 @@ def initialize_database():
         sql_script = f.read()
     
     # Execute the SQL script (creates tables)
-    cursor.executescript(sql_script)
-    
+    try:
+        cursor.executescript(sql_script)
+    except sqlite3.DatabaseError as e:
+        print(f"Database Error: {e}")
+
     # Commit changes and close the connection
     conn.commit()
     conn.close()

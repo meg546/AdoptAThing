@@ -11,9 +11,9 @@ app = Flask(__name__)
 
 # Helper function to connect to the database
 def get_db_connection():
-    conn = sqlite3.connect('database/petadoption.db')
-    conn.row_factory = sqlite3.Row  # Enables dictionary-like access to rows
-    return conn
+    with sqlite3.connect('database/petadoption.db') as conn:
+        conn.row_factory = sqlite3.Row
+        return conn
 
 # Home Page
 @app.route('/')

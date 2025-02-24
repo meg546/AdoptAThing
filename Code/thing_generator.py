@@ -8,7 +8,11 @@ import requests
 
 # Load API key
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    raise ValueError("Missing OpenAI API Key. Ensure the .env file is configured.")
+openai.api_key = api_key
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
